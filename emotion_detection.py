@@ -1,6 +1,10 @@
 import requests
 
 
+import requests
+import json
+
+
 def emotion_detector(text_to_analyze):
     url = "https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict"
 
@@ -16,15 +20,33 @@ def emotion_detector(text_to_analyze):
 
     response = requests.post(url, headers=headers, json=input_json)
 
-    return response.text
+    response_dict = json.loads(response.text)
 
+    emotions = response_dict["emotionPredictions"][0]["emotion"]
 
-# theia@theiadocker-kamleshpaliw:/home/project/final_project/oaqjp-final-p
-# roject-emb-ai$ python3
-# Python 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0] on linux
-# Type "help", "copyright", "credits" or "license" for more information.
-# >>> from emotion_detection import emotion_detector
-# >>> emotion_detector("I love this new technology.")
-# '{"emotionPredictions":[{"emotion":{"anger":0.01364663, "disgust":0.0017160787, "fear":0.008986978, "joy":0.9719017, "sadness":0.055187024}, "target":"", "emotionMentions":[{"span":{"begin":0, "end":27, "text":"I love this new technology."}, "emotion":{"anger":0.01364663, "disgust":0.0017160787, "fear":0.008986978, "joy":0.9719017, "sadness":0.055187024}}]}], "producerId":{"name":"Ensemble Aggregated Emotion Workflow", "version":"0.0.1"}}'
-# >>> exit()
+    anger_score = emotions["anger"]
+    disgust_score = emotions["disgust"]
+    fear_score = emotions["fear"]
+    joy_score = emotions["joy"]
+    sadness_score = emotions["sadness"]
+
+    emotion_scores = {
+        "anger": anger_score,
+        "disgust": disgust_score,
+        "fear": fear_score,
+        "joy": joy_score,
+        "sadness": sadness_score
+    }
+
+    dominant_emotion = max(emotion_scores, key=emotion_scores.get)
+
+    return {
+        "anger": anger_score,
+        "disgust": disgust_score,
+        "fear": fear_score,
+        "joy": joy_score,
+        "sadness": sadness_score,
+        "dominant_emotion": dominant_emotion
+    }
+
 
